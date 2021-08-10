@@ -2,12 +2,23 @@ import React, { Component } from 'react'
 import M from 'materialize-css';
 import Navbar from '../Subcomponents/Navbar';
 import { apiCall } from './../../Api/ApiWrapper'
-import axios from 'axios';
+//import { Modal } from 'react-materialize';
 
 export class ManagementUsers extends Component {
 
     state = {
-        users: []
+        users: [],
+        loading: false,
+
+        id_use: 0,
+        name_use: "",
+        last_use: "",
+        email_use: "",
+        password_use: "",
+        role_use: 1,
+        line_lead: 3,
+
+        open: true
     }
 
     componentDidMount = async () => {
@@ -17,35 +28,123 @@ export class ManagementUsers extends Component {
 
     handleRead = async () => {
         const res = await apiCall("GET", "/users/users")
-        //console.log(res.data)
         this.setState({ users: res.data })
     }
 
-    handleCreate = () => {
-
+    handleCreate = async (e) => {
+        e.preventDefault()
+        const { name_use, last_use, email_use, password_use, role_use, line_lead } = this.state
+        if (name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use && line_lead !== "") {
+            const user = {
+                name_use,
+                last_use,
+                email_use,
+                password_use,
+                role_use,
+                line_lead
+            }
+            const response = await apiCall("post", "/users/register", user)
+            if (response.status === 200) {
+                window.M.toast({ html: response.message }, 3000)
+                const data = this.state.users
+                this.setState({ users: [...data, response.data] })
+                this.clearInputs()
+            } else {
+                window.M.toast({ html: response.message }, 3000)
+            }
+        } else {
+            window.M.toast({ html: 'Por favor ingrese los campos requeridos' }, 3000)
+        }
     }
 
-    handleUpdate = () => {
-
+    handleUpdate = async () => {
+        const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead } = this.state
+        if (id_use !== 0 && name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use !== 0 && line_lead !== 0) {
+            const user = {
+                name_use,
+                last_use,
+                email_use,
+                password_use,
+                role_use,
+                line_lead
+            }
+            const response = await apiCall("put", "/users/user", user)
+            console.log(response)
+        } else {
+            window.M.toast({ html: 'Por favor ingrese los campos requeridos' }, 3000)
+        }
     }
 
-    handleDelete = () => {
+    handleDelete = async () => {
+        const { id_use } = this.state
+        console.log("Hola")
+        if (id_use !== 0) {
+            const response = await apiCall("delete", "/users/user", { id_use })
+            console.log(response)
+            if (response.status === 200) {
+                window.M.toast({ html: response.message }, 3000)
+                const data = this.state.users.filter(item => item.id_use !== id_use)
+                this.setState({ users: data })
+                this.clearInputs()
+            } else {
+                window.M.toast({ html: response.message }, 3000)
+            }
+        } else {
+            window.M.toast({ html: 'Debe seleccionar un elemento para poder realizar esta accion' }, 3000)
+        }
+    }
 
+    putsFields = () => {
+        const { id_use, users } = this.state
+        if (id_use !== 0) {
+            const filter = users.find(item => item.id_use === id_use)
+            this.setState({
+                name_use: filter.name_use,
+                last_use: filter.last_use,
+                email_use: filter.email_use,
+                password_use: filter.password_use,
+                role_use: filter.role_use,
+                line_lead: filter.line_lead
+            })
+        } else {
+            window.M.toast({ html: 'Debe seleccionar un elemento para poder realizar esta accion' }, 3000)
+        }
+        this.setState({})
+    }
+
+    clearInputs = () => {
+        this.setState({
+            id_use: 0,
+            name_use: "",
+            last_use: "",
+            email_use: "",
+            password_use: "",
+            role_use: 1,
+            line_lead: 3
+        })
+    }
+
+    handleOnChange = (e) => {
+        console.log(e.target.id)
+        this.setState({
+            [e.target.id]: e.target.value
+        });
     }
 
 
 
     render() {
         const { users } = this.state
-        let table
-        console.log(users)
+        const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead } = this.state
+        console.log(id_use)
+        let table = <div>Lo sentimos, no hay nada que mostrar</div>
         if (users.length > 0) {
-            table = users.map(item => (
+            table = users.map((item, i) => (
                 <tr>
                     <td>
                         <p>
                             <label>
-                                <input type="checkbox" />
+                                <input type="checkbox" value={item.id_use} checked={item.id_use === id_use ? true : false} onChange={() => this.setState({ id_use: item.id_use })} />
                                 <span />
                             </label>
                         </p>
@@ -112,41 +211,142 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                         </a>
                         <ul>
                             <li><a href="#create_user" className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">add</i></a></li>
-                            <li><a className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">update</i></a></li>
-                            <li><a className="btn-floating waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">delete</i></a></li>
+                            <li><a href="#update_user" onClick={this.putsFields} className={id_use !== 0 ? "btn-floating waves-effect waves-light modal-trigger" : "btn-floating waves-effect waves-light"} style={{ backgroundColor: '#0C0966' }}><i className="material-icons">update</i></a></li>
+                            <li><a onClick={this.handleDelete} className="btn-floating waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">delete</i></a></li>
                         </ul>
                     </div>
                     <div id="create_user" className="modal">
                         <div className="modal-content">
-                            <h4>Crear personal</h4>
+                            <h4>Crear usuario</h4>
                             <div className="row">
                                 <form>
                                     <div className="input-field col s6">
-                                        <input id="names_use" type="text" className="validate" />
-                                        <label htmlFor="names_use">Nombres</label>
+                                        <input id="name_use" type="text" className="validate" onChange={this.handleOnChange} value={name_use} />
+                                        <label htmlFor="name_use">Nombres</label>
                                     </div>
                                     <div className="input-field col s6">
-                                        <input id="last_use" type="text" className="validate" />
+                                        <input id="last_use" type="text" className="validate" onChange={this.handleOnChange} value={last_use} />
                                         <label htmlFor="last_use">Apellidos</label>
                                     </div>
                                     <div className="input-field col s6">
-                                        <input id="email_use" type="email" className="validate" />
+                                        <input id="email_use" type="email" className="validate" onChange={this.handleOnChange} value={email_use} />
                                         <label htmlFor="email_use">Email</label>
                                     </div>
                                     <div className="input-field col s6">
-                                        <input id="password_use" type="password" className="validate" />
+                                        <input id="password_use" type="password" className="validate" onChange={this.handleOnChange} value={password_use} />
                                         <label htmlFor="password_use">Password</label>
                                     </div>
-                                    <div className="input-field col s6">
-                                        <input id="role_use" type="text" className="validate" />
-                                        <label htmlFor="role_use">Rol</label>
+                                    <div class="input-field col s12" >
+                                        <select id="role_use" value={role_use} onChange={this.handleOnChange}>
+                                            <option value="" disabled selected>Rol</option>
+                                            <option value="1">Lider</option>
+                                            <option value="2">Administrador</option>
+                                        </select>
+                                        <label>Rol de usuario</label>
                                     </div>
-                                    <div className="input-field col s6">
+                                    <div class="input-field col s12">
+                                        <select id="line_lead" value={line_lead} onChange={this.handleOnChange}>
+                                            <option value="" disabled selected>Linea (Opcional)</option>
+                                            <option value="3">Linea 1</option>
+                                            <option value="4">Linea 2</option>
+                                            <option value="5">Linea 3</option>
+                                            <option value="6">Linea 4</option>
+                                            <option value="7">Linea 5</option>
+                                            <option value="8">No aplica</option>
+                                        </select>
+                                        <label>Linea a gestionar</label>
+                                    </div>
+                                    {/* <div className="input-field col s6">
                                         <input id="avatar_use" type="text" className="validate" />
                                         <label htmlFor="avatar_use">Avatar</label>
-                                    </div>
+                                    </div> */}
 
-                                    <button type="submit" >guardar</button>
+                                    <button onClick={this.handleCreate} className="btn" >guardar</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                    {/* 
+                    <Modal
+                        actions={[
+                            <Button flat modal="close" node="button" waves="green">Close</Button>
+                        ]}
+                        bottomSheet={false}
+                        fixedFooter={false}
+                        header="Modal Header"
+                        id="Modal-10"
+                        open={this.state.open}
+                        options={{
+                            dismissible: true,
+                            endingTop: '10%',
+                            inDuration: 250,
+                            onCloseEnd: null,
+                            onCloseStart: null,
+                            onOpenEnd: null,
+                            onOpenStart: null,
+                            opacity: 0.5,
+                            outDuration: 250,
+                            preventScrolling: true,
+                            startingTop: '4%'
+                        }}>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+                        </p>
+                    </Modal>
+ */}
+
+                    <div id="update_user" className="modal">
+                        <div className="modal-content">
+                            <h4>Actualizar usuario</h4>
+                            <div className="row">
+                                <form>
+                                    <div className="input-field col s12">
+                                        <input disabled id="id_use" type="text" value={id_use} />
+                                        <label htmlFor="name_use">Id de usuario</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input id="name_use" type="text" className="validate" onChange={this.handleOnChange} value={name_use} />
+                                        <label htmlFor="name_use">Nombres</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input id="last_use" type="text" className="validate" onChange={this.handleOnChange} value={last_use} />
+                                        <label htmlFor="last_use">Apellidos</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input id="email_use" type="email" className="validate" onChange={this.handleOnChange} value={email_use} />
+                                        <label htmlFor="email_use">Email</label>
+                                    </div>
+                                    <div className="input-field col s6">
+                                        <input id="password_use" type="password" className="validate" onChange={this.handleOnChange} value={password_use} />
+                                        <label htmlFor="password_use">Password</label>
+                                    </div>
+                                    <div class="input-field col s12" >
+                                        <select id="role_use" value={role_use} onChange={this.handleOnChange}>
+                                            <option value="" disabled selected>Rol</option>
+                                            <option value="1">Lider</option>
+                                            <option value="2">Administrador</option>
+                                        </select>
+                                        <label>Rol de usuario</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <select id="line_lead" value={line_lead} onChange={this.handleOnChange}>
+                                            <option value="" disabled selected>Linea (Opcional)</option>
+                                            <option value="3">Linea 1</option>
+                                            <option value="4">Linea 2</option>
+                                            <option value="5">Linea 3</option>
+                                            <option value="6">Linea 4</option>
+                                            <option value="7">Linea 5</option>
+                                            <option value="8">No aplica</option>
+                                        </select>
+                                        <label>Linea a gestionar</label>
+                                    </div>
+                                    {/* <div className="input-field col s6">
+                                        <input id="avatar_use" type="text" className="validate" />
+                                        <label htmlFor="avatar_use">Avatar</label>
+                                    </div> */}
+
+                                    <button onClick={this.handleCreate} className="btn" >guardar</button>
                                 </form>
 
                             </div>
