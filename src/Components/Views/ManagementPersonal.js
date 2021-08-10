@@ -1,14 +1,66 @@
 import React, { Component } from 'react'
 import M from 'materialize-css';
 import Navbar from '../Subcomponents/Navbar';
+import { apiCall } from './../../Api/ApiWrapper'
+import axios from 'axios';
 
 export class ManagementPersonal extends Component {
 
-    componentDidMount = () => {
-        M.AutoInit()
+    state = {
+        people: []
     }
 
+    componentDidMount = async () => {
+        M.AutoInit()
+        await this.handleRead()
+        
+    }
+    handleRead = async () => {
+        const res = await apiCall("get", "/people/people")
+        console.log(res)
+        this.setState({ people: res.data })
+    }
+
+
+    
     render() {
+        const { people } = this.state
+        let tabla
+        console.log( people )
+        if (people.length >0){
+            tabla=people.map(items =>(
+
+                <tr>
+                <td>
+                    <p>
+                        <label>
+                            <input type="checkbox" />
+                            <span />
+                        </label>
+                    </p>
+                </td>
+                
+                <td>{items.names_peo}</td>
+                <td>{items.last_name_peo}</td>
+                <td>{items.state_peo}</td>
+                <td>{items.turn_peo}</td>
+                <td>{items.line_peo}</td>
+                <td>{items.phone_peo}</td>
+            </tr>
+
+
+
+
+
+
+            ))
+
+
+
+
+
+
+        }
         return (
             <div>
                 <Navbar />
@@ -64,22 +116,7 @@ export class ManagementPersonal extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <p>
-                                        <label>
-                                            <input type="checkbox" />
-                                            <span />
-                                        </label>
-                                    </p>
-                                </td>
-                                <td>Juan</td>
-                                <td>Ramirez</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>Activo</td>
-                                <td>3135678990</td>
-                            </tr>
+                          {tabla}
                         </tbody>
                     </table>
                     <div className="fixed-action-btn">
@@ -97,7 +134,7 @@ export class ManagementPersonal extends Component {
                             <h4>Crear personal</h4>
                             <div className="row">
                                 <div className="input-field col s6">
-                                    <input id="names_peo" type="text" className="validate" />
+                                    <input  id="names_peo" type="text" className="validate" />
                                     <label htmlFor="names_peo">Nombres</label>
                                 </div>
                                 <div className="input-field col s6">
