@@ -5,7 +5,7 @@ import Login from './Components/Views/Login'
 
 function App() {
   return (
-    <ManagementUsers />
+    <ManagementPersonal/>
   );
 }
 
