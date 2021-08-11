@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import M from 'materialize-css';
 import Navbar from '../Subcomponents/Navbar';
 import { apiCall } from './../../Api/ApiWrapper'
-//import { Modal } from 'react-materialize';
 
 export class ManagementUsers extends Component {
 
     state = {
+        cusers: [],
         users: [],
         loading: false,
+        search: "",
 
         id_use: 0,
         name_use: "",
@@ -26,9 +27,28 @@ export class ManagementUsers extends Component {
         await this.handleRead()
     }
 
+    handleSearch = (e) => {
+        const { value } = e.target
+        const { cusers } = this.state
+        if (value !== "") {
+            const data = cusers.filter(user => {
+                const itemData = user.name_use ? user.name_use.toUpperCase() : ''.toUpperCase();
+                const textData = value.toUpperCase();
+                return itemData.indexOf(textData) > -1;
+            })
+            this.setState({ users: data })
+        } else {
+            this.setState({ users: cusers })
+        }
+    }
+
     handleRead = async () => {
         const res = await apiCall("GET", "/users/users")
-        this.setState({ users: res.data })
+        if (res.data.length > 0) {
+            this.setState({ users: res.data, cusers: res.data })
+        } else {
+
+        }
     }
 
     handleCreate = async (e) => {
@@ -57,10 +77,12 @@ export class ManagementUsers extends Component {
         }
     }
 
-    handleUpdate = async () => {
-        const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead } = this.state
+    handleUpdate = async (e) => {
+        e.preventDefault()
+        const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead, cusers } = this.state
         if (id_use !== 0 && name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use !== 0 && line_lead !== 0) {
             const user = {
+                id_use,
                 name_use,
                 last_use,
                 email_use,
@@ -68,8 +90,20 @@ export class ManagementUsers extends Component {
                 role_use,
                 line_lead
             }
-            const response = await apiCall("put", "/users/user", user)
-            console.log(response)
+            const res = await apiCall("put", "/users/user", user)
+            if (res.status === 200) {
+                const data = cusers.map(item => {
+                    if (item.id_use === user.id_use) {
+                        return res.data
+                    }
+                    return item
+                })
+                this.setState({ users: data })
+                window.M.toast({ html: res.message }, 3000)
+                this.clearInputs()
+            } else {
+                window.M.toast({ html: res.message }, 3000)
+            }
         } else {
             window.M.toast({ html: 'Por favor ingrese los campos requeridos' }, 3000)
         }
@@ -102,7 +136,7 @@ export class ManagementUsers extends Component {
                 name_use: filter.name_use,
                 last_use: filter.last_use,
                 email_use: filter.email_use,
-                password_use: filter.password_use,
+                password_use: "",
                 role_use: filter.role_use,
                 line_lead: filter.line_lead
             })
@@ -125,13 +159,10 @@ export class ManagementUsers extends Component {
     }
 
     handleOnChange = (e) => {
-        console.log(e.target.id)
         this.setState({
             [e.target.id]: e.target.value
         });
     }
-
-
 
     render() {
         const { users } = this.state
@@ -144,7 +175,7 @@ export class ManagementUsers extends Component {
                     <td>
                         <p>
                             <label>
-                                <input type="checkbox" value={item.id_use} checked={item.id_use === id_use ? true : false} onChange={() => this.setState({ id_use: item.id_use })} />
+                                <input className="blue" type="checkbox" value={item.id_use} checked={item.id_use === id_use ? true : false} onChange={() => this.setState({ id_use: item.id_use })} />
                                 <span />
                             </label>
                         </p>
@@ -178,18 +209,26 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                     </symbol>
                 </svg>
 
-
-                <div className="search" style={{ marginLeft: '16%', marginTop: '2%' }}>
-                    <input type="text" placeholder="search" className="browser-default" />
-                    <div className="symbol">
-                        <svg className="cloud">
-                            <use xlinkHref="#cloud" />
-                        </svg>
-                        <svg className="lens">
-                            <use xlinkHref="#lens" />
-                        </svg>
+                <div style={{
+                    display: "flex",
+                    "flex-direction": "column",
+                    "justify-content": "flex-start",
+                    "align-items": "flex-start"
+                }}>
+                    <div className="search" style={{ marginLeft: '16%', marginTop: '2%' }}>
+                        <input type="text" placeholder="Busqueda usuario por nombre" onChange={this.handleSearch} className="browser-default" />
+                        <div className="symbol">
+                            <svg className="cloud">
+                                <use xlinkHref="#cloud" />
+                            </svg>
+                            <svg className="lens">
+                                <use xlinkHref="#lens" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
+
+
                 <div className="container" style={{ marginTop: '3%' }}>
                     <table className="responsive-table centered highlight striped">
                         <thead>
@@ -221,11 +260,11 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                             <div className="row">
                                 <form>
                                     <div className="input-field col s6">
-                                        <input id="name_use" type="text" className="validate" onChange={this.handleOnChange} value={name_use} />
+                                        <input id="name_use" type="text" onChange={this.handleOnChange} value={name_use} />
                                         <label htmlFor="name_use">Nombres</label>
                                     </div>
                                     <div className="input-field col s6">
-                                        <input id="last_use" type="text" className="validate" onChange={this.handleOnChange} value={last_use} />
+                                        <input id="last_use" type="text" onChange={this.handleOnChange} value={last_use} />
                                         <label htmlFor="last_use">Apellidos</label>
                                     </div>
                                     <div className="input-field col s6">
@@ -233,7 +272,7 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                                         <label htmlFor="email_use">Email</label>
                                     </div>
                                     <div className="input-field col s6">
-                                        <input id="password_use" type="password" className="validate" onChange={this.handleOnChange} value={password_use} />
+                                        <input id="password_use" type="password" onChange={this.handleOnChange} value={password_use} />
                                         <label htmlFor="password_use">Password</label>
                                     </div>
                                     <div class="input-field col s12" >
@@ -267,34 +306,6 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                             </div>
                         </div>
                     </div>
-                    {/* 
-                    <Modal
-                        actions={[
-                            <Button flat modal="close" node="button" waves="green">Close</Button>
-                        ]}
-                        bottomSheet={false}
-                        fixedFooter={false}
-                        header="Modal Header"
-                        id="Modal-10"
-                        open={this.state.open}
-                        options={{
-                            dismissible: true,
-                            endingTop: '10%',
-                            inDuration: 250,
-                            onCloseEnd: null,
-                            onCloseStart: null,
-                            onOpenEnd: null,
-                            onOpenStart: null,
-                            opacity: 0.5,
-                            outDuration: 250,
-                            preventScrolling: true,
-                            startingTop: '4%'
-                        }}>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-                        </p>
-                    </Modal>
- */}
 
                     <div id="update_user" className="modal">
                         <div className="modal-content">
@@ -303,23 +314,23 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                                 <form>
                                     <div className="input-field col s12">
                                         <input disabled id="id_use" type="text" value={id_use} />
-                                        <label htmlFor="name_use">Id de usuario</label>
+                                        <label htmlFor="name_use" class="active">Id de usuario</label>
                                     </div>
                                     <div className="input-field col s6">
                                         <input id="name_use" type="text" className="validate" onChange={this.handleOnChange} value={name_use} />
-                                        <label htmlFor="name_use">Nombres</label>
+                                        <label htmlFor="name_use" class="active">Nombres</label>
                                     </div>
                                     <div className="input-field col s6">
                                         <input id="last_use" type="text" className="validate" onChange={this.handleOnChange} value={last_use} />
-                                        <label htmlFor="last_use">Apellidos</label>
+                                        <label htmlFor="last_use" class="active">Apellidos</label>
                                     </div>
                                     <div className="input-field col s6">
                                         <input id="email_use" type="email" className="validate" onChange={this.handleOnChange} value={email_use} />
-                                        <label htmlFor="email_use">Email</label>
+                                        <label htmlFor="email_use" class="active">Email</label>
                                     </div>
                                     <div className="input-field col s6">
                                         <input id="password_use" type="password" className="validate" onChange={this.handleOnChange} value={password_use} />
-                                        <label htmlFor="password_use">Password</label>
+                                        <label htmlFor="password_use" class="active">Password</label>
                                     </div>
                                     <div class="input-field col s12" >
                                         <select id="role_use" value={role_use} onChange={this.handleOnChange}>
@@ -346,14 +357,14 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                                         <label htmlFor="avatar_use">Avatar</label>
                                     </div> */}
 
-                                    <button onClick={this.handleCreate} className="btn" >guardar</button>
+                                    <button onClick={this.handleUpdate} className="btn" >guardar</button>
                                 </form>
 
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
 
         )
     }
