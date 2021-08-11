@@ -4,7 +4,7 @@ import ManagementPersonal from './Components/Views/ManagementPersonal'
 
 function App() {
   return (
-    <ManagementUsers />
+    <ManagementPersonal/>
   );
 }
 
