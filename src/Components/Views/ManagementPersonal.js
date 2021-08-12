@@ -9,6 +9,10 @@ export class ManagementPersonal extends Component {
     state = {
         people: [],
         loading:false,
+         busqueda:"",
+         linea:"",
+         estado:"",
+         turno:"",
 
      
         id_peo: "",
@@ -40,6 +44,40 @@ export class ManagementPersonal extends Component {
       this.setState({insertar: !this.state.insertar})
 
     }
+    onChange=async  e =>{
+        e.persist();
+        await this.setState({busqueda: e.target.value})
+        console.log(this.state.busqueda)
+
+
+
+    }
+    onChangelinea=async  e =>{
+        e.persist();
+        await this.setState({linea: e.target.value})
+        console.log(this.state.linea)
+
+
+
+    }
+    onChangeTurno=async  e =>{
+        e.persist();
+        await this.setState({turno: e.target.value})
+        console.log(this.state.turno)
+
+
+
+    }
+    onChangeEstado=async  e =>{
+        e.persist();
+        await this.setState({estado: e.target.value})
+        console.log(this.state.estado)
+
+
+
+    }
+
+  
     
     handleCreate = async (e) => {
         e.preventDefault()
@@ -115,6 +153,7 @@ export class ManagementPersonal extends Component {
             line_peo: ""
         })
     }
+ 
    
 
     
@@ -123,6 +162,7 @@ export class ManagementPersonal extends Component {
         const{id_peo,names_peo,last_name_peo,avatar_peo,phone_peo,state_peo,turn_peo,line_peo} = this.state
         console.log(people)
         let tabla 
+        
         if (people.length >0){
             tabla=people.map((items) =>(
 
@@ -144,19 +184,19 @@ export class ManagementPersonal extends Component {
                 <td>{items.phone_peo}</td>
             </tr>
 
-
+        
 
 
 
 
             ))
-
-
+       
 
 
 
 
         }
+      
         return (
             <div>
                 <Navbar />
@@ -166,12 +206,12 @@ export class ManagementPersonal extends Component {
                         <div className="row ">
                             <div className="col s12 m12 l6" style={{ marginBottom: '2%' }}>
                                 <div className="Input">
-                                    <input type="text" id="input" className="Input-text browser-default" placeholder="Busqueda de usuario" />
-                                    <label htmlFor="input" className="Input-label">First name</label>
+                                    <input type="text" name="busqueda" className="Input-text browser-default" placeholder="Busqueda de usuario" onChange={this.onChange} value={this.state.busqueda}/>
+                                    <label htmlFor="input" className="Input-label"></label>
                                 </div>
                             </div>
                             <div className="input-field col s12 m4 l2">
-                                <select>
+                                <select onChange={this.onChangelinea} value={this.state.linea}>
                                     <option value disabled selected>Filtrar por linea</option>
                                     <option value={1}>Option 1</option>
                                     <option value={2}>Option 2</option>
@@ -180,7 +220,7 @@ export class ManagementPersonal extends Component {
                                 <label>Linea</label>
                             </div>
                             <div className="input-field col s6 m4 l2">
-                                <select>
+                                <select onChange={this.onChangeTurno} value={this.state.turno}>
                                     <option value disabled selected>Filtrar por turno</option>
                                     <option value={1}>Option 1</option>
                                     <option value={2}>Option 2</option>
@@ -189,11 +229,11 @@ export class ManagementPersonal extends Component {
                                 <label>Turno</label>
                             </div>
                             <div className="input-field col s6 m4 l2">
-                                <select>
+                                <select onChange={this.onChangeEstado} value={this.state.estado}>
                                     <option value disabled selected>Filtrar por estado</option>
-                                    <option value={1}>Option 1</option>
-                                    <option value={2}>Option 2</option>
-                                    <option value={3}>Option 3</option>
+                                    <option value={2}>Activo</option>
+                                    <option value={1}>Inactivo</option>
+                                   
                                 </select>
                                 <label>Estado</label>
                             </div>
@@ -221,8 +261,10 @@ export class ManagementPersonal extends Component {
                         </a>
                         <ul>
                             <li><a href="#create_personal"  className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">add</i></a></li>
-                            <li><a href="update_personal" onClick={this.putsFields}className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">update</i></a></li>
+                            <li><a href="#update_personal" onClick={this.putsFields}className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">update</i></a></li>
                             <li><a onClick={this.handleDelete} className="btn-floating waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">delete</i></a></li>
+                            <li><a href="#programa"  className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">alarm_add</i></a></li>
+                            <li><a   className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">rotate_left</i></a></li>
                         </ul>
                     </div>
                     <div id="create_personal" className="modal" >
@@ -312,6 +354,42 @@ export class ManagementPersonal extends Component {
                             <a href="#!" className="modal-close waves-effect waves-green btn-flat">Guardar</a>
                         </div> */}
                     </div>
+                    <div id="programa" className="modal">
+                        <div className="modal-content">
+                            <h4>Planificar Programa</h4>
+                            <div className="row">
+                             <form>
+                                <div className="input-field col s12">
+                                    <input  id="people_poe" type="text" className="validate" />
+                                    <label htmlFor="people_peo">Persona</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input id="date_prom" type="date" className="validate" />
+                                    <label htmlFor="date_prom">Fecha</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input id="state_prom" type="text" className="validate"  />
+                                    <label htmlFor="state_prom">Estado</label>
+                                </div>
+                               
+                               <div>
+                               
+                               <button  className="btn waves-effect waves-light " >Guardar</button>
+                               </div>
+                               
+                               
+    
+                                </form> 
+                            </div>
+                         
+                        </div>
+                        {/* <div className="modal-footer">
+                            <a href="#!" className="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+                            <a href="#!" className="modal-close waves-effect waves-green btn-flat">Guardar</a>
+                        </div> */}
+                    </div>
+                
+
                 
             </div>
 
