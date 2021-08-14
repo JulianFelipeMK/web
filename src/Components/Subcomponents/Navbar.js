@@ -2,17 +2,40 @@ import React, { Component } from 'react'
 import M from 'materialize-css';
 
 export class Navbar extends Component {
+
+    state = {
+        user: {}
+    }
+
+    componentDidMount = () => {
+        var user = JSON.parse(localStorage.getItem("user"))
+        this.setState({ user })
+    }
+    logOff = () => {
+        localStorage.clear()
+    }
+
     render() {
         return (
             <nav>
-                <div className="nav-wrapper" style={{ backgroundColor: '#0B1B4F' }}>
-                    <a href="#!" className="brand-logo " style={{ fontSize: 40 }}><strong>GAE</strong></a>
-                    {/* <ul className="right hide-on-med-and-down">
-                        <li><a className="dropdown-trigger" href="dropper" data-target="dropdown1" title="Abrir" style={{ fontSize: 'xx-large' }}><strong>Juan Jose Ramirez</strong><i className="material-icons right">arrow_drop_down</i></a></li>
-                    </ul> */}
+                <div className="container">
+                    <div className="nav-wrapper">
+                        <a href="#" className="sidenav-trigger" data-target="mobile-demo">
+                            <i className="material-icons">menu</i>
+                        </a>
+                        <a href="/menu" className="brand-logo">Gestion de personal</a>
+                        <ul id="nav-mobile" className="right hide-on-med-and-down">
+                            <li><a href="/" onClick={this.logOff}>Salir</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </nav>
+                <ul className="sidenav" id="mobile-demo">
 
+                    <li>
+                        <a href="/" onClick={this.logOff}>Salir</a>
+                    </li>
+                </ul>
+            </nav>
         )
     }
 }

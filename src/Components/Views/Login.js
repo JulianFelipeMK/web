@@ -13,8 +13,15 @@ class Login extends Component {
         const { email_use, password_use } = this.state
         if (email_use !== "" && password_use !== "") {
             const res = await apiCall('post', '/users/login', { email_use, password_use })
-            //console.log(data)
-            window.M.toast({ html: res.message }, 3000)
+            if (res.status === 200) {
+                window.M.toast({ html: res.message }, 3000)
+                const user = JSON.stringify(res.data)
+                localStorage.setItem("logged", true)
+                localStorage.setItem("user", user)
+                this.props.history.push("/menu")
+            } else {
+                window.M.toast({ html: res.message }, 3000)
+            }
         } else {
             window.M.toast({ html: "Debe ingresar los campos requeridos" }, 3000)
         }

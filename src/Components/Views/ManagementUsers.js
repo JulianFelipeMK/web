@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import M from 'materialize-css';
 import Navbar from '../Subcomponents/Navbar';
 import { apiCall } from './../../Api/ApiWrapper'
+import Pagination from '../Subcomponents/Pagination';
 
 export class ManagementUsers extends Component {
 
@@ -19,12 +20,31 @@ export class ManagementUsers extends Component {
         role_use: 1,
         line_lead: 3,
 
-        open: true
+        open: true,
+        pagesLimit: 5,
+        currentPage: 1,
+        indexLastPost: 0,
+        indexFirstPost: 0
     }
 
     componentDidMount = async () => {
         M.AutoInit()
         await this.handleRead()
+        this.setValues()
+    }
+
+    setValues = (page = null) => {
+        const { pagesLimit, currentPage, cusers } = this.state
+        let current
+        if (page === null) {
+            current = currentPage
+        } else {
+            current = page
+        }
+        const indexLastPost = current * pagesLimit
+        const indexFirstPost = indexLastPost - pagesLimit
+        const users = cusers.slice(indexFirstPost, indexLastPost)
+        this.setState({ indexLastPost, indexFirstPost, users })
     }
 
     handleSearch = (e) => {
@@ -38,7 +58,7 @@ export class ManagementUsers extends Component {
             })
             this.setState({ users: data })
         } else {
-            this.setState({ users: cusers })
+            this.setValues()
         }
     }
 
@@ -128,6 +148,11 @@ export class ManagementUsers extends Component {
         }
     }
 
+    paginate = (page) => {
+        this.setState({ currentPage: page })
+        this.setValues(page)
+    }
+
     putsFields = () => {
         const { id_use, users } = this.state
         if (id_use !== 0) {
@@ -165,8 +190,8 @@ export class ManagementUsers extends Component {
     }
 
     render() {
-        const { users } = this.state
-        const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead } = this.state
+        const { users, pagesLimit, cusers } = this.state
+        const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead, currentPage } = this.state
         console.log(id_use)
         let table = <div>Lo sentimos, no hay nada que mostrar</div>
         if (users.length > 0) {
@@ -306,6 +331,8 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                             </div>
                         </div>
                     </div>
+
+                    <Pagination recordsPerPage={5} totalRecords={cusers.length} paginate={this.paginate} currentPage={this.state.currentPage} />
 
                     <div id="update_user" className="modal">
                         <div className="modal-content">

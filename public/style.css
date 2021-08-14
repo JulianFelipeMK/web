@@ -256,6 +256,10 @@
     outline: none;
     box-shadow: 0.2rem 0.8rem 1.6rem var(--colorPrimary600);
   }
+
+  nav{
+    background-color: #0B1B4F;
+  }
   
   .Input-label {
     display: block;
@@ -272,6 +276,18 @@
     transform-origin: 0 0;
     transition: opacity var(--inputTransitionDuration) var(--inputTransitionTF), transform var(--inputTransitionDuration) var(--inputTransitionTF), visibility 0ms var(--inputTransitionDuration) var(--inputTransitionTF), z-index 0ms var(--inputTransitionDuration) var(--inputTransitionTF);
   }
+
+  .btn:hover, .btn-large:hover, .btn-small:hover {
+    background-color: #0C0966;
+  }
+
+  .btn, .btn-large, .btn-small {
+    background-color: #0B1B4F;
+  }
+
+  .pagination li.active {
+  background-color: #0B1B4F;
+}
   
   .Input-text:-moz-placeholder-shown + .Input-label {
     visibility: hidden;
@@ -287,6 +303,24 @@
     visibility: hidden;
     z-index: -1;
   }
+
+  .tabs .tab a{
+    color:#0B1B4F;
+} 
+
+.tabs .tab a:hover {
+    background-color:#0B1B4F;
+    color:#FFF;
+} 
+
+.tabs .tab a.active {
+    background-color:#0B1B4F;
+    color:#fff;
+} 
+
+.tabs .indicator {
+    background-color:#0B1B4F;
+}
   
   .Input-text:not(:-moz-placeholder-shown) + .Input-label, .Input-text:focus:not(:-moz-placeholder-shown) + .Input-label {
     visibility: visible;

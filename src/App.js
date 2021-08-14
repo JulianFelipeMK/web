@@ -1,11 +1,10 @@
 import React from 'react';
-import ManagementUsers from './Components/Views/ManagementUsers'
-import ManagementPersonal from './Components/Views/ManagementPersonal'
-import Login from './Components/Views/Login'
+import Routes from './RoutesHandler'
+import RequestTranspass from './Components/Views/RequestTranspass'
 
 function App() {
   return (
-    <ManagementPersonal/>
+    <Routes />
   );
 }
 
