@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import MainMenu from './Components/Views/MainMenu'
 import ManagementPersonal from './Components/Views/ManagementPersonal'
 import ManagementUsers from './Components/Views/ManagementUsers'
-import Statistics from './Components/Views/Statistics'
+import Graphs from './Components/Views/Graphs'
 import Login from './Components/Views/Login'
 import RequestTranspass from './Components/Views/RequestTranspass'
 
@@ -27,7 +27,7 @@ class RoutesHandler extends Component {
                 <this.PrivateRoute path='/request' component={RequestTranspass}></this.PrivateRoute>
                 <this.PrivateRoute path='/users' component={ManagementUsers}></this.PrivateRoute>
                 <this.PrivateRoute path='/personal' component={ManagementPersonal}></this.PrivateRoute>
-                <this.PrivateRoute path='/statistics' component={Statistics}></this.PrivateRoute>
+                <this.PrivateRoute path='/statistics' component={Graphs}></this.PrivateRoute>
                 <this.PrivateRoute path='/menu' component={MainMenu}></this.PrivateRoute>
             </Router>
         )

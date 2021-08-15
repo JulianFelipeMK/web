@@ -35,18 +35,32 @@ export class RequestTranspass extends Component {
         this.setValues(page)
     }
 
-    setValues = (page = null) => {
+    setValues = (page = null, creque = null, crequea = null) => {
         const { pagesLimit, currentPage, crequest, crequesta } = this.state
         let current
+        let creques
+        let crequesa
         if (page === null) {
             current = currentPage
         } else {
             current = page
         }
+
+        if (creque === null) {
+            creques = crequest
+        } else {
+            creques = creque
+        }
+
+        if (crequea === null) {
+            crequesa = crequesta
+        } else {
+            crequesa = crequea
+        }
         const indexLastPost = current * pagesLimit
         const indexFirstPost = indexLastPost - pagesLimit
-        const request = crequest.slice(indexFirstPost, indexLastPost)
-        const requesta = crequesta.slice(indexFirstPost, indexLastPost)
+        const request = creques.slice(indexFirstPost, indexLastPost)
+        const requesta = crequesa.slice(indexFirstPost, indexLastPost)
         this.setState({ indexLastPost, indexFirstPost, requesta: requesta, request: request })
     }
 
@@ -118,20 +132,27 @@ export class RequestTranspass extends Component {
                 let reque = response.status === 200 ? response.data : request
                 let req
                 let update
+                let flag = false
                 if (state_req === 1) {
+                    flag = true
                     req = request.filter(item => item.id_req === id_req)
                     req[0].people.line_peo = req[0].users_request_requested_reqTousers.id_use
                     update = await apiCall("PUT", "/people/update", req[0].people)
                 }
                 window.M.toast({ html: res.message }, 3000)
-                if (update.status === 200) {
-                    window.M.toast({ html: update.message }, 3000)
+                if (flag) {
+                    if (update.status === 200) {
+                        window.M.toast({ html: update.message }, 3000)
+                    } else {
+                        window.M.toast({ html: update.message }, 3000)
+                    }
                 } else {
-                    window.M.toast({ html: update.message }, 3000)
+                    window.M.toast({ html: "La solicitud ha sido rechazada exitosamente" }, 3000)
                 }
 
-                this.setState({ crequesta: reque })
-                this.setValues()
+
+                this.setState({ crequest: reque })
+                this.setValues(1, reque, null)
                 this.clearInputs()
             } else {
                 window.M.toast({ html: res.message }, 3000)
@@ -155,10 +176,11 @@ export class RequestTranspass extends Component {
             const res = await apiCall("post", "/request/create", request)
             if (res.status === 200) {
                 window.M.toast({ html: res.message }, 3000)
-                const data = this.state.request
+
                 const resa = await apiCall("get", "/request/requests/" + user[0].id_use + "/applicant")
-                this.setState({ crequesta: resa.data })
-                this.setValues()
+                const data = resa.status === 200 ? resa.data : []
+                this.setState({ crequesta: data })
+                this.setValues(1, null, data)
                 this.clearInputs()
             } else {
                 window.M.toast({ html: res.message }, 3000)

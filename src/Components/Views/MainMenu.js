@@ -10,26 +10,45 @@ export class MainMenu extends Component {
 
     componentDidMount = () => {
         var user = JSON.parse(localStorage.getItem("user"))
-        if (user.role_use === 2) {
+        if (user[0].role_use === 2) {
             this.setState({ users: true })
         }
+        this.verifyProgramation()
     }
 
 
     verifyProgramation = async () => {
         var user = JSON.parse(localStorage.getItem("user"))
         const res = await apiCall("GET", "/programation/programation")
-        if (res.message === 200) {
+        const data = res.status === 200 ? res.data : []
+        if (res.status === 200) {
+
             const values = []
-            res.data.map(item => {
-                const value = {
-                    id_peo: item.people_peo
+            const personal = []
+            data.map(item => {
+                if (item.state_prom === 1) {
+                    console.log("Hola")
+                    const value = {
+                        id_prom: item.id_prom,
+                        state_prom: 0
+                    }
+
+                    const people = {
+                        id_peo: item.people_peo,
+                        state_peo: 13
+                    }
+                    values.push(value)
+                    personal.push(people)
                 }
-                values.push(value)
             })
-            const response = await apiCall("PUT", "/request/changeState", { people: values })
-            if (response.message === 200) {
-                window.M.toast({ html: 'Las programaciones del dia de hoy han sido aplicadas exitosamente' }, 3000)
+            if (values.length > 0 && personal.length > 0) {
+                const response = await apiCall("PUT", "/programation/changeState", { programation: values })
+
+                let people = await apiCall("PUT", "/people/changeState", { people: personal })
+                console.log(people)
+                if (response.status === 200) {
+                    window.M.toast({ html: 'Las programaciones del dia de hoy han sido aplicadas exitosamente' }, 3000)
+                }
             }
         } else {
             window.M.toast({ html: 'NO hay programacion pendientes para el dia de hoy' }, 3000)

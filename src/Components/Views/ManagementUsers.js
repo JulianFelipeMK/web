@@ -33,17 +33,24 @@ export class ManagementUsers extends Component {
         this.setValues()
     }
 
-    setValues = (page = null) => {
+    setValues = (page = null, array = null) => {
         const { pagesLimit, currentPage, cusers } = this.state
         let current
+        let data
         if (page === null) {
             current = currentPage
         } else {
             current = page
         }
+
+        if (array === null) {
+            data = cusers
+        } else {
+            data = array
+        }
         const indexLastPost = current * pagesLimit
         const indexFirstPost = indexLastPost - pagesLimit
-        const users = cusers.slice(indexFirstPost, indexLastPost)
+        const users = data.slice(indexFirstPost, indexLastPost)
         this.setState({ indexLastPost, indexFirstPost, users })
     }
 
@@ -58,16 +65,14 @@ export class ManagementUsers extends Component {
             })
             this.setState({ users: data })
         } else {
-            this.setValues()
+            this.setValues(null, cusers)
         }
     }
 
     handleRead = async () => {
         const res = await apiCall("GET", "/users/users")
-        if (res.data.length > 0) {
+        if (res.status === 200) {
             this.setState({ users: res.data, cusers: res.data })
-        } else {
-
         }
     }
 
@@ -87,7 +92,8 @@ export class ManagementUsers extends Component {
             if (response.status === 200) {
                 window.M.toast({ html: response.message }, 3000)
                 const data = this.state.users
-                this.setState({ users: [...data, response.data] })
+                this.setState({ cusers: [...data, response.data] })
+                this.setValues(null, [...data, response.data])
                 this.clearInputs()
             } else {
                 window.M.toast({ html: response.message }, 3000)
@@ -118,7 +124,8 @@ export class ManagementUsers extends Component {
                     }
                     return item
                 })
-                this.setState({ users: data })
+                this.setState({ cusers: data })
+                this.setValues(null, data)
                 window.M.toast({ html: res.message }, 3000)
                 this.clearInputs()
             } else {
@@ -138,7 +145,8 @@ export class ManagementUsers extends Component {
             if (response.status === 200) {
                 window.M.toast({ html: response.message }, 3000)
                 const data = this.state.users.filter(item => item.id_use !== id_use)
-                this.setState({ users: data })
+                this.setState({ cusers: data })
+                this.setValues(null, data)
                 this.clearInputs()
             } else {
                 window.M.toast({ html: response.message }, 3000)
