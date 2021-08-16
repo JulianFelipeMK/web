@@ -44,39 +44,42 @@ export class ManagementPersonal extends Component {
         this.setValues()
     }
 
-    handleChangeTurn = async () => {// probado perfecto
+    handleChangeTurn = async () => {// sin probar
         const { cpeople, currentPage } = this.state
         var user = JSON.parse(localStorage.getItem("user"))
         const vals = []
+        const lines = this.handleLines(user[0].lines_use)
         cpeople.map(item => {
-            if (item.line_peo === user[0].lead_line) {
-                let values = {
-                    id_peo: item.id_peo,
-                    turn_peo: 0
-                }
+            lines.map(val => {
+                if (item.line_peo === val.value) {
+                    let values = {
+                        id_peo: item.id_peo,
+                        turn_peo: 0
+                    }
 
-                if (item.turn_gen_peo === 9) {
-                    if (item.turn_peo === 9) {
-                        values.turn_peo = 11
-                    } else {
-                        values.turn_peo = 9
+                    if (item.turn_gen_peo === 9) {
+                        if (item.turn_peo === 9) {
+                            values.turn_peo = 11
+                        } else {
+                            values.turn_peo = 9
+                        }
+                    } else if (item.turn_gen_peo === 10) {
+                        if (item.turn_peo === 10) {
+                            values.turn_peo = 9
+                        } else {
+                            values.turn_peo = 10
+                        }
+                    } else if (item.turn_gen_peo === 11) {
+                        if (item.turn_peo === 11) {
+                            values.turn_peo = 10
+                        } else {
+                            values.turn_peo = 11
+                        }
                     }
-                } else if (item.turn_peo === 10) {
-                    if (item.turn_peo === 10) {
-                        values.turn_peo = 9
-                    } else {
-                        values.turn_peo = 10
-                    }
-                } else if (item.turn_peo === 11) {
-                    if (item.turn_peo === 11) {
-                        values.turn_peo = 10
-                    } else {
-                        values.turn_peo = 11
-                    }
-                }
-                vals.push(values)
+                    vals.push(values)
 
-            }
+                }
+            })
         })
         const people = await apiCall("put", "/people/changeTurn", { people: vals })
         if (people.status === 200) {
@@ -294,19 +297,54 @@ export class ManagementPersonal extends Component {
         }
     }
 
-    handleCreateProgram = async (e) => {
+    handleLines = (lines) => {
+        const values = lines.split(",")
+        const selected = []
+        values.map(item => {
+            if (item === "3") {
+                const val = { label: "Linea 1", value: 3 }
+                selected.push(val)
+            }
+
+            if (item === "4") {
+                const val = { label: "Linea 2", value: 4 }
+                selected.push(val)
+            }
+
+            if (item === "5") {
+                const val = { label: "Linea 3", value: 5 }
+                selected.push(val)
+            }
+
+            if (item === "6") {
+                const val = { label: "Linea 4", value: 6 }
+                selected.push(val)
+            }
+            if (item === "7") {
+                const val = { label: "Linea 5", value: 7 }
+                selected.push(val)
+            }
+
+        })
+        return selected
+    }
+
+    handleCreateProgram = async (e) => {//Sin probar
         e.preventDefault()
         var user = JSON.parse(localStorage.getItem("user"))
         const { id_peo, currentPage, date_prom, cpeople } = this.state
         if (id_peo !== 0 && date_prom !== "") {
             const date = moment(new Date(date_prom))
             let flag = false
+            let lines = this.handleLines(user[0].lines_use)
 
             cpeople.map(item => {
                 if (item.id_peo === id_peo) {
-                    if (item.line_peo === user[0].lead_line) {
-                        flag = true
-                    }
+                    lines.map(line => {
+                        if (item.line_peo === line.value) {
+                            flag = true
+                        }
+                    })
                 }
             })
             if (flag) {
@@ -355,7 +393,7 @@ export class ManagementPersonal extends Component {
         const { id_peo, cpeople } = this.state
         let id_find = id === null ? id_peo : id
         if (id_find !== 0) {
-            const filter = cpeople.find(item => item.id_peo === id_find)
+            const filter = cpeople.find(item => item.id_peo === parseInt(id_find))
             this.setState({
                 names_peo: filter.names_peo,
                 last_name_peo: filter.last_name_peo,
@@ -411,6 +449,28 @@ export class ManagementPersonal extends Component {
                     estado = "Inactivo"
                 }
 
+                let turnop = ""
+
+                if (items.turn_gen_peo === 9) {
+                    if (items.turn_peo === 9) {
+                        turnop = "Turno 3"
+                    } else {
+                        turnop = "Turno 1"
+                    }
+                } else if (items.turn_gen_peo === 10) {
+                    if (items.turn_peo === 10) {
+                        turnop = "Turno 3"
+                    } else {
+                        turnop = "Turno 2"
+                    }
+                } else if (items.turn_gen_peo === 11) {
+                    if (items.turn_peo === 11) {
+                        turnop = "Turno 2"
+                    } else {
+                        turnop = "Turno 3"
+                    }
+                }
+
                 return < tr key={items.id_peo} >
                     <td>
                         <p>
@@ -428,8 +488,10 @@ export class ManagementPersonal extends Component {
                     <td>{items.last_name_peo}</td>
                     <td>{estado}</td>
                     <td>{turno}</td>
+                    <td>{turnop}</td>
                     <td>{linea}</td>
                     <td>{items.phone_peo}</td>
+
                 </tr >
 
             })
@@ -493,6 +555,7 @@ export class ManagementPersonal extends Component {
                                 <th>Apellido</th>
                                 <th>Estado</th>
                                 <th>Turno</th>
+                                <th>Proximo turno</th>
                                 <th>Linea</th>
                                 <th>Celular</th>
                             </tr>
@@ -509,7 +572,7 @@ export class ManagementPersonal extends Component {
                             <li><a id="change_state" onClick={(e) => { this.handleUpdate(e, "change") }} className="btn-floating" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">track_changes</i></a></li>
                             <li><a onClick={this.handleChangeTurn} className="btn-floating waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">published_with_changes</i></a></li>
                             <li><a href="#create_personal" className="btn-floating modal-trigger waves-effect waves-light" style={{ backgroundColor: '#0C0966' }}><i className="material-icons">add</i></a></li>
-                            <li><a href="#update_personal" onClick={this.putsFields} className={id_peo !== 0 ? "btn-floating modal-trigger" : "btn-floating"} style={{ backgroundColor: '#0C0966' }}><i className="material-icons">update</i></a></li>
+                            <li><a href="#update_personal" className={id_peo !== 0 ? "btn-floating modal-trigger" : "btn-floating"} style={{ backgroundColor: '#0C0966' }}><i className="material-icons">update</i></a></li>
                             <li><a onClick={this.handleDelete} className="btn-floating " style={{ backgroundColor: '#0C0966' }}><i className="material-icons">delete</i></a></li>
                             <li><a href="#create_program" onClick={(e) => {
                                 if (id_peo === 0) {

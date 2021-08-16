@@ -3,6 +3,7 @@ import M from 'materialize-css';
 import Navbar from '../Subcomponents/Navbar';
 import { apiCall } from './../../Api/ApiWrapper'
 import Pagination from '../Subcomponents/Pagination';
+import Select from 'react-select'
 
 export class ManagementUsers extends Component {
 
@@ -18,7 +19,7 @@ export class ManagementUsers extends Component {
         email_use: "",
         password_use: "",
         role_use: 1,
-        line_lead: 3,
+        line_lead: [],
 
         open: true,
         pagesLimit: 5,
@@ -76,17 +77,115 @@ export class ManagementUsers extends Component {
         }
     }
 
+    handleLines = (lines) => {
+        const values = lines.split(",")
+        const selected = []
+        values.map(item => {
+            if (item === "3") {
+                const val = { label: "Linea 1", value: 3 }
+                selected.push(val)
+            }
+
+            if (item === "4") {
+                const val = { label: "Linea 2", value: 4 }
+                selected.push(val)
+            }
+
+            if (item === "5") {
+                const val = { label: "Linea 3", value: 5 }
+                selected.push(val)
+            }
+
+            if (item === "6") {
+                const val = { label: "Linea 4", value: 6 }
+                selected.push(val)
+            }
+            if (item === "7") {
+                const val = { label: "Linea 5", value: 7 }
+                selected.push(val)
+            }
+
+        })
+        return selected
+    }
+
+    codeLines = (values) => {
+        let string = ""
+        let flag = false
+        if (values.length > 0) {
+            values.map((item, i) => {
+                if (item.value === 3) {
+                    if (flag) {
+                        string = string + ",3"
+                    } else {
+                        string = "3"
+                        flag = true
+                    }
+                }
+
+                if (item.value === 4) {
+                    if (flag) {
+                        string = string + ",4"
+                    } else {
+                        string = "4"
+                        flag = true
+                    }
+
+                }
+
+                if (item.value === 5) {
+                    if (flag) {
+                        string = string + ",5"
+                    } else {
+                        string = "5"
+                        flag = true
+                    }
+                }
+
+                if (item.value === 6) {
+                    if (flag) {
+                        string = string + ",6"
+                    } else {
+                        string = "6"
+                        flag = true
+                    }
+                }
+
+                if (item.value === 7) {
+                    if (flag) {
+                        string = string + ",7"
+                    } else {
+                        string = "7"
+                        flag = true
+                    }
+                }
+
+                if (item.value === 8) {
+                    if (flag) {
+                        string = string + ",8"
+                    } else {
+                        string = "8"
+                        flag = true
+                    }
+                }
+            })
+        }
+        return string
+    }
+
     handleCreate = async (e) => {
         e.preventDefault()
         const { name_use, last_use, email_use, password_use, role_use, line_lead } = this.state
-        if (name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use && line_lead !== "") {
+        if (name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use && line_lead.length > 0) {
+            console.log(line_lead)
+            const lines = this.codeLines(line_lead)
             const user = {
                 name_use,
                 last_use,
                 email_use,
                 password_use,
                 role_use,
-                line_lead
+                line_lead: lines
             }
             const response = await apiCall("post", "/users/register", user)
             if (response.status === 200) {
@@ -106,7 +205,9 @@ export class ManagementUsers extends Component {
     handleUpdate = async (e) => {
         e.preventDefault()
         const { id_use, name_use, last_use, email_use, password_use, role_use, line_lead, cusers } = this.state
-        if (id_use !== 0 && name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use !== 0 && line_lead !== 0) {
+        if (id_use !== 0 && name_use !== "" && last_use !== "" && email_use !== "" && password_use !== "" && role_use !== 0 && line_lead.length > 0) {
+            const lines = this.codeLines(line_lead)
+            console.log("Lineas" + lines)
             const user = {
                 id_use,
                 name_use,
@@ -114,7 +215,7 @@ export class ManagementUsers extends Component {
                 email_use,
                 password_use,
                 role_use,
-                line_lead
+                lead_line: lines
             }
             const res = await apiCall("put", "/users/user", user)
             if (res.status === 200) {
@@ -165,13 +266,14 @@ export class ManagementUsers extends Component {
         const { id_use, users } = this.state
         if (id_use !== 0) {
             const filter = users.find(item => item.id_use === id_use)
+            const selected = this.handleLines(filter.lines_use)
             this.setState({
                 name_use: filter.name_use,
                 last_use: filter.last_use,
                 email_use: filter.email_use,
                 password_use: "",
                 role_use: filter.role_use,
-                line_lead: filter.line_lead
+                line_lead: selected
             })
         } else {
             window.M.toast({ html: 'Debe seleccionar un elemento para poder realizar esta accion' }, 3000)
@@ -187,7 +289,7 @@ export class ManagementUsers extends Component {
             email_use: "",
             password_use: "",
             role_use: 1,
-            line_lead: 3
+            line_lead: []
         })
     }
 
@@ -309,24 +411,27 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                                         <label htmlFor="password_use">Password</label>
                                     </div>
                                     <div class="input-field col s12" >
-                                        <select id="role_use" value={role_use} onChange={this.handleOnChange}>
+                                        <select id="role_use" value={parseInt(this.state.role_use)} onChange={this.handleOnChange}>
                                             <option value="" disabled selected>Rol</option>
-                                            <option value="1">Lider</option>
-                                            <option value="2">Administrador</option>
+                                            <option value={12}>Lider</option>
+                                            <option value={13}>Administrador</option>
                                         </select>
                                         <label>Rol de usuario</label>
                                     </div>
-                                    <div class="input-field col s12">
-                                        <select id="line_lead" value={line_lead} onChange={this.handleOnChange}>
-                                            <option value="" disabled selected>Linea (Opcional)</option>
-                                            <option value="3">Linea 1</option>
-                                            <option value="4">Linea 2</option>
-                                            <option value="5">Linea 3</option>
-                                            <option value="6">Linea 4</option>
-                                            <option value="7">Linea 5</option>
-                                            <option value="8">No aplica</option>
-                                        </select>
-                                        <label>Linea a gestionar</label>
+                                    <div className="col s12" style={{ marginBottom: "10px" }}>
+                                        <span>Lineas asignadas</span>
+                                        <Select defaultValue={this.state.line_lead}
+                                            onChange={(e) => this.setState({ line_lead: e })}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                            options={[
+                                                { label: "Linea 1", value: 3 },
+                                                { label: "Linea 2", value: 4 },
+                                                { label: "Linea 3", value: 5 },
+                                                { label: "Linea 4", value: 6 },
+                                                { label: "Linea 5", value: 7 }
+                                            ]}
+                                            isMulti />
                                     </div>
                                     {/* <div className="input-field col s6">
                                         <input id="avatar_use" type="text" className="validate" />
@@ -375,17 +480,20 @@ C4.622,10.623,2.833,8.831,2.845,6.631L2.845,6.631z" />
                                         </select>
                                         <label>Rol de usuario</label>
                                     </div>
-                                    <div class="input-field col s12">
-                                        <select id="line_lead" value={line_lead} onChange={this.handleOnChange}>
-                                            <option value="" disabled selected>Linea (Opcional)</option>
-                                            <option value="3">Linea 1</option>
-                                            <option value="4">Linea 2</option>
-                                            <option value="5">Linea 3</option>
-                                            <option value="6">Linea 4</option>
-                                            <option value="7">Linea 5</option>
-                                            <option value="8">No aplica</option>
-                                        </select>
-                                        <label>Linea a gestionar</label>
+                                    <div className="col s12" style={{ marginBottom: "10px" }}>
+                                        <span>Lineas asignadas</span>
+                                        <Select defaultValue={this.state.line_lead}
+                                            onChange={(e) => this.setState({ line_lead: e })}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                            options={[
+                                                { label: "Linea 1", value: 3 },
+                                                { label: "Linea 2", value: 4 },
+                                                { label: "Linea 3", value: 5 },
+                                                { label: "Linea 4", value: 6 },
+                                                { label: "Linea 5", value: 7 }
+                                            ]}
+                                            isMulti />
                                     </div>
                                     {/* <div className="input-field col s6">
                                         <input id="avatar_use" type="text" className="validate" />
