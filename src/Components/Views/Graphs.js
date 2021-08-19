@@ -301,7 +301,7 @@ export class Graphs extends Component {
     };
     const carg = {
       
-     labels: ['Etiquetador','Paster','Lavadora','Palet','Depa','Operador','Op 3','Mecanico','Soplador','VarioPack','Var 1','Var 2','Ocme 150','Ocme 80','Electricista','Var 3','Var 4','Coordinador','Planeador','Lider produccion','Lider mantenimiento','BTE','Aux. Administrativo','Varios Hab'],
+     labels: ['Etiquetador','Paster','Lavadora','Palet','Depa',' 4 Operador','Op 3','Mecanico','Soplador','VarioPack','Var 1','Var 2','Ocme 150','Ocme 80','Electricista','Var 3','Var 4','Coordinador','Planeador','Lider produccion','Lider mantenimiento','BTE','Aux. Administrativo','Varios Hab'],
         
       datasets: [
         {
