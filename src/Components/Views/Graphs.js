@@ -64,13 +64,16 @@ export class Graphs extends Component {
     let ocme150 = 0
     let ocme80 = 0
     let electricista = 0
-    let coordinador = 0
+    let coordinacion = 0
     let planeador = 0
     let liderProduccion = 0
     let liderMantenimiento = 0
     let bte = 0
     let auxAdministrativo = 0
     let variosHab = 0
+    let coordinador1 =  0
+    let coordinador2 = 0
+    let gerentePack = 0
 
 
 
@@ -204,7 +207,7 @@ export class Graphs extends Component {
               var4 = var4 + 1
             }
             if (item.cargo_peo === 32) {
-              coordinador = coordinador + 1
+              coordinacion= coordinacion + 1
             }
             if (item.cargo_peo === 33) {
               planeador = planeador + 1
@@ -224,6 +227,15 @@ export class Graphs extends Component {
             if (item.cargo_peo === 38) {
               variosHab = variosHab + 1
             }
+            if (item.cargo_peo === 50) {
+              gerentePack = gerentePack + 1
+            }
+            if (item.cargo_peo === 51) {
+              coordinador1  = coordinador1 + 1
+            }
+            if (item.cargo_peo === 52) {
+              coordinador2 = coordinador2 + 1
+            }
             
 
           }
@@ -235,7 +247,7 @@ export class Graphs extends Component {
 
     const data_lines = [line_1, line_2, line_3, line_4, line_5]
     const data_donut = [active, inactive]
-    const data_cargos = [envasador, etiquetador,paster,lavadora,palet,depa,operador,op3,mecanico,soplador,varioPack,var1,var2,ocme150,ocme80,electricista,var3,var4,coordinador,planeador,liderProduccion,liderMantenimiento,bte,auxAdministrativo,variosHab]
+    const data_cargos = [envasador, etiquetador,paster,lavadora,palet,depa,operador,op3,mecanico,soplador,varioPack,var1,var2,ocme150,ocme80,electricista,var3,var4,coordinacion,planeador,liderProduccion,liderMantenimiento,bte,auxAdministrativo,variosHab,gerentePack,coordinador1,coordinador2]
     const data_enferm = [vacaciones,enfermedadGeneral,covid19,permisoSindical,calamidad,compromisoEmpresarial,otros]
     this.setState({ data_lines, data_donut, data_cargos,data_enferm })
   }
@@ -301,7 +313,7 @@ export class Graphs extends Component {
     };
     const carg = {
       
-     labels: ['Etiquetador','Paster','Lavadora','Palet','Depa',' 4 Operador','Op 3','Mecanico','Soplador','VarioPack','Var 1','Var 2','Ocme 150','Ocme 80','Electricista','Var 3','Var 4','Coordinador','Planeador','Lider produccion','Lider mantenimiento','BTE','Aux. Administrativo','Varios Hab'],
+     labels: ['Etiquetador','Paster','Lavadora','Palet','Depa',' 4 Operador','Op 3','Mecanico','Soplador','VarioPack','Var 1','Var 2','Ocme 150','Ocme 80','Electricista','Var 3','Var 4','Coordinacion','Planeador','Lider produccion','Lider mantenimiento','BTE','Aux. Administrativo','Varios Hab', 'Gerente Pack ', 'coordinador 1 , coordinador 2'],
         
       datasets: [
         {
