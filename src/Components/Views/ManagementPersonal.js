@@ -11,6 +11,7 @@ export class ManagementPersonal extends Component {
     state = {
         cpeople: [],
         people: [],
+        subdomains: [],
         loading: false,
 
         id_peo: 0,
@@ -41,6 +42,7 @@ export class ManagementPersonal extends Component {
     componentDidMount = async () => {
         M.AutoInit()
         await this.handleRead()
+        await this.handleReadSubs()
         this.setValues()
     }
 
@@ -189,6 +191,15 @@ export class ManagementPersonal extends Component {
         const res = await apiCall("get", "/people/people")
         const people = res.status === 200 ? res.data : []
         this.setState({ people: people, cpeople: people })
+      
+    }
+    handleReadSubs = async () => {
+        const res = await apiCall("get", "/people/subs")
+        const subdomains = res.status === 200 ? res.data : []
+        this.setState({ subdomains: subdomains })
+        console.log(subdomains)
+
+      
     }
 
     handleCreate = async (e) => {//testeado perfecto
@@ -411,89 +422,122 @@ export class ManagementPersonal extends Component {
 
 
 
+
     render() {
         const { people } = this.state
-        const { id_peo, names_peo, last_name_peo, avatar_peo, phone_peo, state_peo, turn_peo, line_peo, cpeople } = this.state
+        const {subdomains} = this.state
+        const { id_peo, names_peo, last_name_peo, avatar_peo, phone_peo, state_peo,sharp_peo, cargo_peo, turn_peo, line_peo, cpeople, rol_use } = this.state
+       
         let tabla
+       
         if (people.length > 0) {
 
             tabla = people.map((items) => {
-                let turno = ""
-                let linea = ""
-                let estado = ""
-                if (items.turn_peo === 9) {
-                    turno = "Turno 1"
-                } else if (items.turn_peo === 10) {
-                    turno = "Turno 2"
-                } else {
-                    turno = "Turno 3"
-                }
+                
+                let subs
+                subs = subdomains.map((item) => {
 
-                if (items.line_peo === 3) {
-                    linea = "Linea 1"
-                } else if (items.line_peo === 4) {
-                    linea = "Linea 2"
-                } else if (items.line_peo === 5) {
-                    linea = "Linea 3"
-                } else if (items.line_peo === 6) {
-                    linea = "Linea 4"
-                } else if (items.line_peo === 7) {
-                    linea = "Linea 5"
-                } else if (items.line_peo === 8) {
-                    linea = "No Aplica"
-                }
+                    let cargo= " "
+                    let turno = ""
+                    let linea = ""
+                    let estado = ""
 
-                if (items.state_peo === 12) {
-                    estado = "Activo"
-                } else {
-                    estado = "Inactivo"
-                }
+                    if (item.id_sub === items.cargo_peo){
 
-                let turnop = ""
-
-                if (items.turn_gen_peo === 9) {
+                        cargo=item.value_sub
+                
+                      }
+                    
+                    
                     if (items.turn_peo === 9) {
-                        turnop = "Turno 3"
+                        turno = "Turno 1"
+                    } else if (items.turn_peo === 10) {
+                        turno = "Turno 2"
                     } else {
-                        turnop = "Turno 1"
+                        turno = "Turno 3"
                     }
-                } else if (items.turn_gen_peo === 10) {
-                    if (items.turn_peo === 10) {
-                        turnop = "Turno 3"
+                    
+                    if(items.cargo_peo)
+    
+                    if (items.line_peo === 3) {
+                        linea = "Linea 1"
+                    } else if (items.line_peo === 4) {
+                        linea = "Linea 2"
+                    } else if (items.line_peo === 5) {
+                        linea = "Linea 3"
+                    } else if (items.line_peo === 6) {
+                        linea = "Linea 4"
+                    } else if (items.line_peo === 7) {
+                        linea = "Linea 5"
+                    } else if (items.line_peo === 8) {
+                        linea = "No Aplica"
+                    }
+    
+                    if (items.state_peo === 12) {
+                        estado = "Activo"
                     } else {
-                        turnop = "Turno 2"
+                        estado = "Inactivo"
                     }
-                } else if (items.turn_gen_peo === 11) {
-                    if (items.turn_peo === 11) {
-                        turnop = "Turno 2"
-                    } else {
-                        turnop = "Turno 3"
+    
+                    let turnop = ""
+    
+                    if (items.turn_gen_peo === 9) {
+                        if (items.turn_peo === 9) {
+                            turnop = "Turno 3"
+                        } else {
+                            turnop = "Turno 1"
+                        }
+                    } else if (items.turn_gen_peo === 10) {
+                        if (items.turn_peo === 10) {
+                            turnop = "Turno 3"
+                        } else {
+                            turnop = "Turno 2"
+                        }
+                    } else if (items.turn_gen_peo === 11) {
+                        if (items.turn_peo === 11) {
+                            turnop = "Turno 2"
+                        } else {
+                            turnop = "Turno 3"
+                        }
                     }
-                }
+    
+                    return < tr key={items.id_peo} >
+                        <td>
+                            <p>
+                                <label>
+                                    <input type="checkbox" value={items.id_peo} checked={items.id_peo === id_peo ? true : false} onChange={() => {
+                                        this.putsFields(items.id_peo)
+                                        this.setState({ id_peo: items.id_peo })
+                                    }} />
+                                    <span />
+                                </label>
+                            </p>
+                        </td>
+    
+                        <td>{items.names_peo}</td>
+                        <td>{items.last_name_peo}</td>
+                        <td>{estado}</td>
+                        <td>{turno}</td>
+                        <td>{turnop}</td>
+                        <td>{linea}</td>
+                        <td>{items.phone_peo}</td>
+                        <td>{cargo}</td>
+    
+                    </tr >
+    
+                    
 
-                return < tr key={items.id_peo} >
-                    <td>
-                        <p>
-                            <label>
-                                <input type="checkbox" value={items.id_peo} checked={items.id_peo === id_peo ? true : false} onChange={() => {
-                                    this.putsFields(items.id_peo)
-                                    this.setState({ id_peo: items.id_peo })
-                                }} />
-                                <span />
-                            </label>
-                        </p>
-                    </td>
 
-                    <td>{items.names_peo}</td>
-                    <td>{items.last_name_peo}</td>
-                    <td>{estado}</td>
-                    <td>{turno}</td>
-                    <td>{turnop}</td>
-                    <td>{linea}</td>
-                    <td>{items.phone_peo}</td>
 
-                </tr >
 
+
+                })
+                
+                
+
+
+                
+             
             })
         }
         return (
@@ -558,6 +602,7 @@ export class ManagementPersonal extends Component {
                                 <th>Proximo turno</th>
                                 <th>Linea</th>
                                 <th>Celular</th>
+                                <th>Cargo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -599,6 +644,11 @@ export class ManagementPersonal extends Component {
                                 <div className="input-field col s6">
                                     <input id="phone_peo" type="number" onChange={this.handleOnChange} value={phone_peo} />
                                     <label htmlFor="phone_peo">Telefono</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input id="sharp_peo" type="text" className="validate" onChange={this.handleOnChange} value={sharp_peo} />
+                                    <label htmlFor="sharp_peo" class="active">Sharp</label>
+
                                 </div>
 
                                 <div class="input-field col s6">
@@ -655,6 +705,10 @@ export class ManagementPersonal extends Component {
                                 <div className="input-field col s6">
                                     <input id="phone_peo" type="text" className="validate" onChange={this.handleOnChange} value={phone_peo} />
                                     <label htmlFor="phone_peo" class="active">Telefono</label>
+                                </div>
+                                <div className="input-field col s6">
+                                    <input id="sharp_peo" type="text" className="validate" onChange={this.handleOnChange} value={sharp_peo} />
+                                    <label htmlFor="sharp_peo" class="active">Sharp</label>
                                 </div>
                                 <div class="input-field col s6">
                                     <select id="state_peo" value={state_peo} onChange={this.handleOnChange}>
