@@ -6,7 +6,7 @@ import Graphs from './Components/Views/Graphs';
 
 function App() {
   return (
-    <Graphs />
+    <Routes />
   );
 }
 

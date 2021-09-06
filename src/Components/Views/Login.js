@@ -12,7 +12,7 @@ class Login extends Component {
         e.preventDefault()
         const { email_use, password_use } = this.state
         if (email_use !== "" && password_use !== "") {
-            const res = await apiCall('post', '/users/login', { email_use, password_use })
+            const res = await apiCall('post', '/people/login', { email_peo: email_use, password_use })
             if (res.status === 200) {
                 window.M.toast({ html: res.message }, 3000)
                 const user = JSON.stringify(res.data)
