@@ -17,6 +17,7 @@ export class ManagementPersonal extends Component {
         loading: false,
         filter: false,
 
+        checked: false,
         id_peo: 0,
         names_peo: "",
         last_name_peo: "",
@@ -167,60 +168,58 @@ export class ManagementPersonal extends Component {
     handleSearch = (e) => {
         e.preventDefault()
         const { filter_name, filter_line, filter_state, filter_turn, cpeople, currentPage } = this.state
-        let flag1 = false
-        let flag2 = false
-        let flag3 = false
-        let flag4 = false
+        let flag1 = filter_name !== "" ? true : false
+        let flag2 = filter_line != 0 ? true : false
+        let flag3 = filter_state != 0 ? true : false
+        let flag4 = filter_turn != 0 ? true : false
 
         let array1 = []
-        let array2 = []
-        let array3 = []
-        let array4 = []
 
         let line = parseInt(filter_line)
         let state = parseInt(filter_state)
         let turn = parseInt(filter_turn)
 
-        if (filter_name !== "") {
+        if (flag1) {
             array1 = cpeople.filter(personal => {
                 const itemData = personal.name_peo ? personal.name_peo.toUpperCase() : ''.toUpperCase();
                 const textData = filter_name.toUpperCase();
                 return itemData.indexOf(textData) > -1;
             })
-            flag1 = true
         }
 
-        if (line !== 0 && flag1) {
-            array2 = array1.filter(item => item.line_peo === line)
-            flag2 = true
-        } else if (line !== 0) {
-            flag2 = true
-            array2 = cpeople.filter(item => item.line_peo === line)
+        if (flag2) {
+            if (flag1) {
+                const temp = array1
+                array1 = temp.filter(item => item.line_peo === line)
+                flag2 = true
+            } else {
+                array1 = cpeople.filter(item => item.line_peo === line)
+            }
         }
 
-        if (turn !== 0 && flag2) {
-            array3 = array2.filter(item => item.turn_peo === turn)
-            flag3 = true
-        } else if (turn !== 0) {
-            flag3 = true
-            array3 = cpeople.filter(item => item.turn_peo === turn)
-        }
+        if (flag3) {
+            if (flag1 || flag2) {
+                const temp = array1
+                array1 = temp.filter(item => item.state_peo === state)
+                flag3 = true
+            } else {
+                array1 = cpeople.filter(item => item.state_peo === state)
+            }
 
-        if (state !== 0 && flag3) {
-            array4 = array3.filter(item => item.state_peo === state)
-            flag4 = true
-        } else if (state !== 0) {
-            flag4 = true
-            array4 = cpeople.filter(item => item.state_peo === state)
         }
 
         if (flag4) {
-            this.setValues(currentPage, array4, true)
-        } else if (flag3) {
-            this.setValues(currentPage, array3, true)
-        } else if (flag2) {
-            this.setValues(currentPage, array2, true)
-        } else if (flag1) {
+            if (flag1 || flag2 || flag3) {
+                const temp = array1
+                array1 = temp.filter(item => item.turn_peo === turn)
+                flag4 = true
+            } else {
+                array1 = cpeople.filter(item => item.turn_peo === turn)
+            }
+
+        }
+
+        if (flag4 || flag3 || flag2 || flag1) {
             this.setValues(currentPage, array1, true)
         } else {
             this.setValues(currentPage, cpeople, false)
@@ -637,7 +636,7 @@ export class ManagementPersonal extends Component {
     render() {
         const { people } = this.state
         const { subdomains } = this.state
-        const { id_peo, names_peo, last_name_peo, phone_peo, state_peo, sharp_peo, cargo_peo, turn_peo, line_peo, fpeople, password_use, email_peo, rol_use, reason_peo, cargosSelect, razonesSelect } = this.state
+        const { id_peo, names_peo, last_name_peo, phone_peo, state_peo, sharp_peo, cargo_peo, turn_peo, line_peo, checked, password_use, email_peo, rol_use, reason_peo, cargosSelect, razonesSelect } = this.state
 
         let tabla = <div>NO hay nada que mostrar</div>
         console.log(this.state.cargo_peo)
@@ -710,9 +709,14 @@ export class ManagementPersonal extends Component {
                     <td>
                         <p>
                             <label>
-                                <input type="checkbox" value={items.id_peo} checked={items.id_peo === id_peo ? true : false} onChange={() => {
-                                    this.putsFields(items.id_peo)
-                                    this.setState({ id_peo: items.id_peo })
+                                <input type="checkbox" value={items.id_peo} checked={items.id_peo === id_peo && checked ? true : false} onChange={() => {
+                                    if (!checked) {
+                                        this.putsFields(items.id_peo)
+                                        this.setState({ id_peo: items.id_peo, checked: true })
+                                    } else {
+                                        this.clearInputs()
+                                        this.setState({ id_peo: 0, checked: false })
+                                    }
                                 }} />
                                 <span />
                             </label>
