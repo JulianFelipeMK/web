@@ -16,7 +16,7 @@ export class MainMenu extends Component {
 
                 <div className="container row" style={{ marginTop: 90 }}>
 
-                    <div className="col s12 m4 l4">
+                    <div className="col s12 m4 l3">
                         <div className="card hoverable">
                             <div className="card-content">
                                 <img src="images/group.png" alt className="responsive-img" />
@@ -29,7 +29,7 @@ export class MainMenu extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col s12 m4 l4">
+                    <div className="col s12 m4 l3">
                         <div className="card hoverable">
                             <div className="card-content">
                                 <img src="images/trend.png" alt className="responsive-img" />
@@ -42,7 +42,7 @@ export class MainMenu extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col s12 m4 l4">
+                    <div className="col s12 m4 l3">
                         <div className="card hoverable">
                             <div className="card-content">
                                 <img src="images/clock.png" alt className="responsive-img" />
@@ -55,19 +55,19 @@ export class MainMenu extends Component {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="col s12 m4 l3">
+                    <div className="col s12 m4 l3">
                         <div className="card hoverable">
                             <div className="card-content">
                                 <img src="images/interview.png" alt className="responsive-img" />
-                                <span className="card-title activator grey-text text-darken-4">Solicitudes<i className="material-icons right">more_vert</i></span>
-                                <a className="btn" href="/request">Ir aqui</a>
+                                <span className="card-title activator grey-text text-darken-4">Historial estadistico<i className="material-icons right">more_vert</i></span>
+                                <a className="btn" href="/history">Ir aqui</a>
                             </div>
                             <div className="card-reveal">
                                 <span className="card-title grey-text text-darken-4">Solicitudes<i className="material-icons right">close</i></span>
-                                <p>En esta opcion podra ver las solicitudes de transpaso de personal</p>
+                                <p>En esta opcion podra ver el estadisticas por fecha deseada</p>
                             </div>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
             </div>
         )

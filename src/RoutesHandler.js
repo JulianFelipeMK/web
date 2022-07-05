@@ -6,6 +6,7 @@ import Graphs from './Components/Views/Graphs'
 import Login from './Components/Views/Login'
 import RequestTranspass from './Components/Views/RequestTranspass'
 import Programations from './Components/Views/Programations'
+import History from './Components/Views/History'
 
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 
@@ -29,6 +30,7 @@ class RoutesHandler extends Component {
                 <this.PrivateRoute path='/statistics' component={Graphs}></this.PrivateRoute>
                 <this.PrivateRoute path='/menu' component={MainMenu}></this.PrivateRoute>
                 <this.PrivateRoute path='/programations' component={Programations}></this.PrivateRoute>
+                <this.PrivateRoute path='/history' component={History}></this.PrivateRoute>
             </Router>
         )
     }
