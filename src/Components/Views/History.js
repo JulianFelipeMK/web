@@ -12,7 +12,9 @@ export class History extends Component {
         ahistory: [],
         bhistory: [],
         date_his: "",
-        line_his: "0"
+        line_his: "0",
+        absents: [],
+        counter_abs: 0
     }
 
 
@@ -23,17 +25,20 @@ export class History extends Component {
 
     handleGetHistory = async (line_his) => {
         //const { line_his } = this.state
+        var date = new Date(line_his)
+        const absent = await apiCall("get", "/history/count", { month_abs: (date.getMonth + 1).toString(), year_abs: date.getFullYear() })
         const data = await apiCall("get", "/history/graphs", { line_his })
         if (data.data.length > 0) {
-            this.setState({ history: data.data })
+            this.setState({ history: data.data, absents: absent.data })
         } else {
             window.M.toast({ html: "No hay resultados asociados a esta busqueda" }, 3000)
         }
     }
 
     handleSetData = (line) => {
-        const { history } = this.state
+        const { history, absents } = this.state
         const line_his = line === null ? this.state.line_his : line
+        let counter_abs = 0
 
         //console.log(line_his)
         var filtera = []
@@ -42,6 +47,14 @@ export class History extends Component {
         const labelb = []
         const dataa = []
         const datab = []
+
+        if (absents.length > 0) {
+            absents.map(item => {
+                if (item.line_abs === line_his) {
+                    counter_abs = item.counter_abs
+                }
+            })
+        }
 
         //console.log(history)
 
@@ -127,7 +140,7 @@ export class History extends Component {
             ],
         };
 
-        this.setState({ ahistory: activos, bhistory: ausentismo })
+        this.setState({ ahistory: activos, bhistory: ausentismo, counter_abs })
     }
 
     handleOnChange = (e) => {
@@ -138,7 +151,7 @@ export class History extends Component {
     }
 
     render() {
-        const { date_his, ahistory, bhistory, history } = this.state
+        const { date_his, ahistory, bhistory, history, counter_abs } = this.state
         //console.log(history)
         return (
             <div>
@@ -170,6 +183,10 @@ export class History extends Component {
                             this.handleGetHistory(date_his)
                             this.handleSetData()
                         }} />
+                    </div>
+
+                    <div className='col s12' style={{ marginBottom: "50px" }}>
+                        <h5>Ausentismo total en el mes de esta fecha : {counter_abs}</h5>
                     </div>
 
                     <div className="col s12 m6 l4" >
