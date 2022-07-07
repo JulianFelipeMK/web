@@ -3,7 +3,7 @@ import axios from 'axios'
 // const getToken = async () => await AsyncStorage.getItem("access-token")
 
 const client = axios.create({
-    baseURL: "http://localhost:3002",
+    baseURL: "https://api-sgp-final.herokuapp.com",
     // auth: { Authorization: 'Bearer ' + { getToken } }
 });
 
